@@ -3,7 +3,7 @@
 #include <string.h>
 #include <time.h>
 
-// matrix mul
+/* matrix mul */
 
 void fill_matrix(int *m, int n) {
     int i;
@@ -66,7 +66,7 @@ void task1(void) {
         free(c);
     }
 
-    // graph
+    /* graph */
     max_time = 0;
     for (k = 0; k < num_sizes; k++)
         if (times[k] > max_time) max_time = times[k];
@@ -85,7 +85,7 @@ void task1(void) {
 
 }
 
-// sort alg
+/* sort alg */
 
 void shell_sort(int *items, int count) {
     int i, j, gap, k;
