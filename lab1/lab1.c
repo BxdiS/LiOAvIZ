@@ -105,6 +105,10 @@ void task3(void) {
     free(a);
 }
 
+int cmp_int(const void *a, const void *b) {
+    return (*(int *)a - *(int *)b);
+}
+
 void task4(void) {
     int rows, cols, i, j, sum;
     int **a;
@@ -125,6 +129,16 @@ void task4(void) {
             a[i][j] = rand() % 41 - 20;
             printf("%4d", a[i][j]);
         }
+        printf("\n");
+    }
+
+    for (i = 0; i < rows; i++)
+        qsort(a[i], cols, sizeof(int), cmp_int);
+
+    printf("\nSorted rows:\n");
+    for (i = 0; i < rows; i++) {
+        for (j = 0; j < cols; j++)
+            printf("%4d", a[i][j]);
         printf("\n");
     }
 
