@@ -218,7 +218,7 @@ void task5(void) {
                     if (field == 1) val = stud[i].famil;
                     else if (field == 2) val = stud[i].name;
                     else val = stud[i].facult;
-                    if (strcmp(val, search) == 0) {
+                    if (strstr(val, search) != 0) {
                         printf("Found: %s %s, faculty %s, record book %d\n",
                                stud[i].famil, stud[i].name,
                                stud[i].facult, stud[i].Nomzach);
