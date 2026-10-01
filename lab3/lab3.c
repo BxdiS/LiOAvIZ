@@ -151,6 +151,42 @@ void pq_add(void) {
     if (cur == NULL) last = p;
 }
 
+void del_by_priority(int prio) {
+    struct node *struc = head;
+    struct node *prev = NULL;
+    struct node *tmp;
+    int count = 0;
+
+    while (struc) {
+        if (struc->priority == prio) {
+            count++;
+            if (prev == NULL) {
+                head = struc->next;
+                free(struc);
+                struc = head;
+            } else {
+                prev->next = struc->next;
+                tmp = struc;
+                struc = struc->next;
+                free(tmp);
+            }
+        } else {
+            prev = struc;
+            struc = struc->next;
+        }
+    }
+
+    if (head == NULL) last = NULL;
+    else {
+        tmp = head;
+        while (tmp->next) tmp = tmp->next;
+        last = tmp;
+    }
+
+    if (count == 0) printf("No elements with priority %d\n", prio);
+    else printf("Deleted %d elements\n", count);
+}
+
 void task1(void) {
     int cmd;
     char name[256];
@@ -162,7 +198,7 @@ void task1(void) {
     printf("priority queue\n\n");
 
     while (1) {
-        printf("\n1 - Add\n2 - View\n3 - Find\n4 - Delete\n5 - Exit\n> ");
+        printf("\n1 - Add\n2 - View\n3 - Find\n4 - Delete\n5 - Delete by priority\n6 - Exit\n> ");
         scanf("%d", &cmd);
 
         if (cmd == 1) {
@@ -180,6 +216,10 @@ void task1(void) {
             scanf("%255s", name);
             del(name);
         } else if (cmd == 5) {
+            printf("Enter priority: ");
+            scanf("%d", &cmd);
+            del_by_priority(cmd);
+        } else if (cmd == 6) {
             free_list();
             break;
         }
