@@ -363,6 +363,27 @@ void stack_pop(void) {
     if (head == NULL) last = NULL;
 }
 
+void stack_reverse(void) {
+    struct node *prev = NULL;
+    struct node *cur = head;
+    struct node *next;
+
+    if (head == NULL) {
+        printf("Stack is empty\n");
+        return;
+    }
+
+    last = head;
+    while (cur) {
+        next = cur->next;
+        cur->next = prev;
+        prev = cur;
+        cur = next;
+    }
+    head = prev;
+    printf("Stack reversed\n");
+}
+
 void task3(void) {
     int cmd;
     char name[256];
@@ -374,7 +395,7 @@ void task3(void) {
     printf("stack (LIFO)\n\n");
 
     while (1) {
-        printf("\n1 - Push\n2 - Pop\n3 - View\n4 - Find\n5 - Delete\n6 - Exit\n> ");
+        printf("\n1 - Push\n2 - Pop\n3 - View\n4 - Find\n5 - Delete\n6 - Reverse\n7 - Exit\n> ");
         scanf("%d", &cmd);
 
         if (cmd == 1) {
@@ -394,6 +415,8 @@ void task3(void) {
             scanf("%255s", name);
             del(name);
         } else if (cmd == 6) {
+            stack_reverse();
+        } else if (cmd == 7) {
             free_list();
             break;
         }
