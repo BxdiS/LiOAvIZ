@@ -258,6 +258,42 @@ void queue_remove(void) {
     if (head == NULL) last = NULL;
 }
 
+void queue_move_to_end(char *name) {
+    struct node *struc = head;
+    struct node *prev = NULL;
+
+    if (head == NULL) {
+        printf("Queue is empty\n");
+        return;
+    }
+
+    while (struc) {
+        if (strcmp(name, struc->inf) == 0) break;
+        prev = struc;
+        struc = struc->next;
+    }
+
+    if (struc == NULL) {
+        printf("Not found\n");
+        return;
+    }
+
+    if (struc == last) {
+        printf("Already at the end\n");
+        return;
+    }
+
+    if (prev == NULL)
+        head = struc->next;
+    else
+        prev->next = struc->next;
+
+    struc->next = NULL;
+    last->next = struc;
+    last = struc;
+    printf("Moved %s to the end\n", name);
+}
+
 void task2(void) {
     int cmd;
     char name[256];
@@ -269,7 +305,7 @@ void task2(void) {
     printf("queue (FIFO)\n\n");
 
     while (1) {
-        printf("\n1 - Enqueue\n2 - Dequeue\n3 - View\n4 - Find\n5 - Delete\n6 - Exit\n> ");
+        printf("\n1 - Enqueue\n2 - Dequeue\n3 - View\n4 - Find\n5 - Delete\n6 - Move to end\n7 - Exit\n> ");
         scanf("%d", &cmd);
 
         if (cmd == 1) {
@@ -289,6 +325,10 @@ void task2(void) {
             scanf("%255s", name);
             del(name);
         } else if (cmd == 6) {
+            printf("Enter name: ");
+            scanf("%255s", name);
+            queue_move_to_end(name);
+        } else if (cmd == 7) {
             free_list();
             break;
         }
