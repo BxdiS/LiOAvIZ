@@ -70,20 +70,40 @@ struct Node *CreateTreeUnique(struct Node *root, struct Node *r, int data) {
     return root;
 }
 
-/* search */
-struct Node *search(struct Node *r, int data) {
-    if (r == NULL) return NULL;
-    if (data == r->data) return r;
-    if (data > r->data) return search(r->left, data);
-    return search(r->right, data);
+/* search with level */
+int search_level(struct Node *r, int data, int level) {
+    if (r == NULL) return -1;
+    if (data == r->data) return level;
+    if (data > r->data) return search_level(r->left, data, level + 1);
+    return search_level(r->right, data, level + 1);
 }
 
-/* count occurrences */
-int count_val(struct Node *r, int data) {
-    if (r == NULL) return 0;
-    if (data == r->data) return 1 + count_val(r->right, data);
-    if (data > r->data) return count_val(r->left, data);
-    return count_val(r->right, data);
+/* count occurrences with levels */
+void count_val(struct Node *r, int data, int level, int *count) {
+    if (r == NULL) return;
+    if (data == r->data) {
+        printf("  found at level %d\n", level);
+        (*count)++;
+        count_val(r->right, data, level + 1, count);
+    } else if (data > r->data) {
+        count_val(r->left, data, level + 1, count);
+    } else {
+        count_val(r->right, data, level + 1, count);
+    }
+}
+
+/* invert level: swap left/right of all nodes at given level */
+void invert_level(struct Node *r, int target, int current) {
+    struct Node *tmp;
+    if (r == NULL) return;
+    if (current == target) {
+        tmp = r->left;
+        r->left = r->right;
+        r->right = tmp;
+        return;
+    }
+    invert_level(r->left, target, current + 1);
+    invert_level(r->right, target, current + 1);
 }
 
 /* free tree */
@@ -96,15 +116,14 @@ void free_tree(struct Node *r) {
 
 /* tree with duplicates */
 void task1(void) {
-    int cmd, val;
-    struct Node *found;
+    int cmd, val, lvl, cnt;
 
     root = NULL;
 
     printf("tree (with dup)\n\n");
 
     while (1) {
-        printf("\n1 - Add\n2 - Print\n3 - Search\n4 - Count\n5 - Complexity\n6 - Exit\n> ");
+        printf("\n1 - Add\n2 - Print\n3 - Search\n4 - Count\n5 - Invert level\n6 - Complexity\n7 - Exit\n> ");
         scanf("%d", &cmd);
 
         if (cmd == 1) {
@@ -119,20 +138,27 @@ void task1(void) {
         } else if (cmd == 3) {
             printf("Enter value: ");
             scanf("%d", &val);
-            found = search(root, val);
-            if (found)
-                printf("Found: %d\n", found->data);
+            lvl = search_level(root, val, 0);
+            if (lvl >= 0)
+                printf("Found: %d, level: %d\n", val, lvl);
             else
                 printf("Not found\n");
         } else if (cmd == 4) {
             printf("Enter value: ");
             scanf("%d", &val);
-            printf("Count: %d\n", count_val(root, val));
+            cnt = 0;
+            count_val(root, val, 0, &cnt);
+            printf("Count: %d\n", cnt);
         } else if (cmd == 5) {
+            printf("Enter level: ");
+            scanf("%d", &val);
+            invert_level(root, val, 0);
+            printf("Level %d inverted\n", val);
+        } else if (cmd == 6) {
             printf("Search complexity:\n");
             printf("  Average: O(log n)\n");
             printf("  Worst:   O(n)\n");
-        } else if (cmd == 6) {
+        } else if (cmd == 7) {
             free_tree(root);
             root = NULL;
             break;
@@ -142,15 +168,14 @@ void task1(void) {
 
 /* tree without duplicates */
 void task2(void) {
-    int cmd, val;
-    struct Node *found;
+    int cmd, val, lvl, cnt;
 
     root = NULL;
 
     printf("tree (no dup)\n\n");
 
     while (1) {
-        printf("\n1 - Add\n2 - Print\n3 - Search\n4 - Count\n5 - Complexity\n6 - Exit\n> ");
+        printf("\n1 - Add\n2 - Print\n3 - Search\n4 - Count\n5 - Invert level\n6 - Complexity\n7 - Exit\n> ");
         scanf("%d", &cmd);
 
         if (cmd == 1) {
@@ -165,20 +190,27 @@ void task2(void) {
         } else if (cmd == 3) {
             printf("Enter value: ");
             scanf("%d", &val);
-            found = search(root, val);
-            if (found)
-                printf("Found: %d\n", found->data);
+            lvl = search_level(root, val, 0);
+            if (lvl >= 0)
+                printf("Found: %d, level: %d\n", val, lvl);
             else
                 printf("Not found\n");
         } else if (cmd == 4) {
             printf("Enter value: ");
             scanf("%d", &val);
-            printf("Count: %d\n", count_val(root, val));
+            cnt = 0;
+            count_val(root, val, 0, &cnt);
+            printf("Count: %d\n", cnt);
         } else if (cmd == 5) {
+            printf("Enter level: ");
+            scanf("%d", &val);
+            invert_level(root, val, 0);
+            printf("Level %d inverted\n", val);
+        } else if (cmd == 6) {
             printf("Search complexity:\n");
             printf("  Average: O(log n)\n");
             printf("  Worst:   O(n)\n");
-        } else if (cmd == 6) {
+        } else if (cmd == 7) {
             free_tree(root);
             root = NULL;
             break;
