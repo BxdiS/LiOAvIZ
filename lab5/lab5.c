@@ -39,13 +39,13 @@ void print_matrix(int **m, int rows, int cols) {
     }
 }
 
-/* random undirected graph: symmetric, no loops */
-void fill_adj(int **a, int n) {
+/* random undirected graph: symmetric, loops appear with probability p_loop */
+void fill_adj(int **a, int n, double p, double p_loop) {
     int i, j;
     for (i = 0; i < n; i++) {
-        a[i][i] = 0;
+        a[i][i] = ((double)rand() / ((double)RAND_MAX + 1.0) < p_loop) ? 1 : 0;
         for (j = i + 1; j < n; j++) {
-            a[i][j] = rand() % 2;
+            a[i][j] = ((double)rand() / ((double)RAND_MAX + 1.0) < p) ? 1 : 0;
             a[j][i] = a[i][j];
         }
     }
@@ -142,6 +142,7 @@ void task2(int **a, int n) {
 int main(void) {
     int **a;
     int n, choice;
+    double p, p_loop;
 
     srand(time(NULL));
 
@@ -153,8 +154,22 @@ int main(void) {
         return 0;
     }
 
+    printf("Enter edge probability (0..1): ");
+    scanf("%lf", &p);
+    if (p < 0.0 || p > 1.0) {
+        printf("wrong\n");
+        return 0;
+    }
+
+    printf("Enter loop probability (0..1): ");
+    scanf("%lf", &p_loop);
+    if (p_loop < 0.0 || p_loop > 1.0) {
+        printf("wrong\n");
+        return 0;
+    }
+
     a = create_matrix(n, n);
-    fill_adj(a, n);
+    fill_adj(a, n, p, p_loop);
 
     printf("1 - adjacency matrix\n");
     printf("2 - incidence matrix\n");
