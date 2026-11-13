@@ -51,58 +51,67 @@ void fill_adj(int **a, int n, double p, double p_loop) {
     }
 }
 
+/* size = number of edges, loops counted as one edge each */
 int adj_size(int **a, int n) {
     int i, j, size = 0;
-    for (i = 0; i < n; i++)
+    for (i = 0; i < n; i++) {
+        size += a[i][i];
         for (j = i + 1; j < n; j++)
             size += a[i][j];
+    }
     return size;
 }
 
-/* print isolated, end and dominating vertices by degrees */
-void print_vertices(int *deg, int n) {
+/* number of distinct adjacent vertices (loop is not counted) */
+void count_neighbors(int **a, int n, int *neigh) {
+    int i, j;
+    for (i = 0; i < n; i++) {
+        neigh[i] = 0;
+        for (j = 0; j < n; j++)
+            if (j != i && a[i][j] == 1)
+                neigh[i]++;
+    }
+}
+
+/* print isolated, end and dominating vertices by number of neighbours */
+void print_vertices(int *neigh, int n) {
     int i;
 
     printf("Isolated:");
     for (i = 0; i < n; i++)
-        if (deg[i] == 0) printf(" %d", i + 1);
+        if (neigh[i] == 0) printf(" %d", i + 1);
     printf("\n");
 
     printf("End:");
     for (i = 0; i < n; i++)
-        if (deg[i] == 1) printf(" %d", i + 1);
+        if (neigh[i] == 1) printf(" %d", i + 1);
     printf("\n");
 
     printf("Dominating:");
     for (i = 0; i < n; i++)
-        if (deg[i] == n - 1) printf(" %d", i + 1);
+        if (neigh[i] == n - 1) printf(" %d", i + 1);
     printf("\n");
 }
 
 /* adjacency matrix */
 void task1(int **a, int n) {
-    int *deg;
-    int i, j;
+    int *neigh;
 
     printf("\nAdjacency matrix:\n");
     print_matrix(a, n, n);
 
     printf("Graph size: %d\n", adj_size(a, n));
 
-    deg = (int *)malloc(n * sizeof(int));
-    for (i = 0; i < n; i++) {
-        deg[i] = 0;
-        for (j = 0; j < n; j++)
-            deg[i] += a[i][j];
-    }
-    print_vertices(deg, n);
-    free(deg);
+    neigh = (int *)malloc(n * sizeof(int));
+    count_neighbors(a, n, neigh);
+    print_vertices(neigh, n);
+    free(neigh);
 }
 
 /* incidence matrix */
 void task2(int **a, int n) {
     int **inc;
-    int *deg;
+    int *neigh;
     int m, i, j, e;
 
     m = adj_size(a, n);
@@ -113,6 +122,12 @@ void task2(int **a, int n) {
 
     inc = create_matrix(n, m);
     e = 0;
+    /* loops first: a loop contributes 2 to the vertex degree */
+    for (i = 0; i < n; i++)
+        if (a[i][i] == 1) {
+            inc[i][e] = 2;
+            e++;
+        }
     for (i = 0; i < n; i++)
         for (j = i + 1; j < n; j++)
             if (a[i][j] == 1) {
@@ -124,18 +139,14 @@ void task2(int **a, int n) {
     printf("\nIncidence matrix:\n");
     print_matrix(inc, n, m);
 
-    /* size = number of columns (edges) */
+    /* size = number of columns (edges, loops included) */
     printf("Graph size: %d\n", m);
 
-    deg = (int *)malloc(n * sizeof(int));
-    for (i = 0; i < n; i++) {
-        deg[i] = 0;
-        for (j = 0; j < m; j++)
-            deg[i] += inc[i][j];
-    }
-    print_vertices(deg, n);
+    neigh = (int *)malloc(n * sizeof(int));
+    count_neighbors(a, n, neigh);
+    print_vertices(neigh, n);
 
-    free(deg);
+    free(neigh);
     free_matrix(inc, n);
 }
 
