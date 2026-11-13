@@ -182,15 +182,23 @@ int main(void) {
     a = create_matrix(n, n);
     fill_adj(a, n, p, p_loop);
 
-    printf("1 - adjacency matrix\n");
-    printf("2 - incidence matrix\n");
-    printf("> ");
-    scanf("%d", &choice);
+    /* same graph is reused for every menu item */
+    while (1) {
+        printf("\n1 - adjacency matrix\n");
+        printf("2 - incidence matrix\n");
+        printf("0 - exit\n");
+        printf("> ");
+        if (scanf("%d", &choice) != 1)
+            break;
 
-    switch (choice) {
-        case 1: task1(a, n); break;
-        case 2: task2(a, n); break;
-        default: printf("wrong\n"); break;
+        if (choice == 0)
+            break;
+        if (choice == 1)
+            task1(a, n);
+        else if (choice == 2)
+            task2(a, n);
+        else
+            printf("wrong\n");
     }
 
     free_matrix(a, n);
